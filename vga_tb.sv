@@ -21,7 +21,7 @@ initial begin
 	CLOCK_50 = 0;
 	//#100000 
 	//$dumpon;
-	#5000
+	#500000
 	$finish;
 end
 

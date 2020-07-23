@@ -9,11 +9,15 @@ module vga (
 	output bit VGA_SYNC_N, //sync on green???
 	output bit VGA_VS);
 
-logic [5:0] counter_10;
+logic [6:0] counter_10;
 bit clock_10;
 logic [8:0] h_counter;
 logic [9:0] v_counter;
 logic [23:0] framebuffer [200*600-1:0]; //200 x 600
+
+initial counter_10 = 0;
+initial h_counter = 0;
+initial v_counter = 0;
 
 always @ (posedge CLOCK_50) begin
 	counter_10++;
@@ -62,7 +66,7 @@ always @ (posedge clock_10) begin
 		v_counter = 0;
 		VGA_BLANK_N = 1; //re-enable RG&B ?
 	end
-	VGA_R = framebuffer[h_counter+v_counter*200][22:16];
+	VGA_R = framebuffer[h_counter+v_counter*200][23:16];
 	VGA_G = framebuffer[h_counter+v_counter*200][15:8];
 	VGA_B = framebuffer[h_counter+v_counter*200][7:0];
 end
