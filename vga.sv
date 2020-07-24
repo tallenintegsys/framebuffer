@@ -10,24 +10,28 @@ module vga (
 	output bit VGA_VS);
 
 logic [6:0] counter_10;
-bit clock_10;
 logic [8:0] h_counter;
 logic [9:0] v_counter;
 logic [23:0] framebuffer [200*600-1:0]; //200 x 600
 
-initial counter_10 = 0;
-initial h_counter = 0;
-initial v_counter = 0;
+initial begin
+	counter_10 = 0;
+	h_counter = 0;
+	v_counter = 0;
+	$readmemh("screenshot.txt", framebuffer);
+	end
 
 always @ (posedge CLOCK_50) begin
 	counter_10++;
-	if (counter_10 == 50) begin
+	if (counter_10 == 2)
+		VGA_CLK = 1'd1;
+	if (counter_10 == 5) begin
 		counter_10 = 0;
-		clock_10 = ~clock_10; //10MHz
+		VGA_CLK = ~VGA_CLK; //10MHz
 	end
 end
 
-always @ (posedge clock_10) begin
+always @ (posedge VGA_CLK) begin
 	h_counter++;
 	if (h_counter == 200) begin
 		//hfront porch start

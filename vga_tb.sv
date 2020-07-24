@@ -1,3 +1,4 @@
+`timescale 10ns/10ps
 module vga_tb;
 
 	// Input Ports
@@ -21,7 +22,7 @@ initial begin
 	CLOCK_50 = 0;
 	//#100000 
 	//$dumpon;
-	#500000
+	#5000000
 	$finish;
 end
 
