@@ -1,3 +1,5 @@
+`timescale 10ns/10ps
+
 module vga (
 	input CLOCK_50,
 	output reg [7:0]VGA_B,
@@ -12,20 +14,20 @@ module vga (
 logic [6:0] counter_10;
 logic [8:0] h_counter;
 logic [9:0] v_counter;
-//logic [23:0] fb_d;
-//logic [16:0] fb_adr;
-//logic [23:0] fb_q;
-//logic fb_rw;
+logic [23:0] fb_d;
+logic [16:0] fb_adr;
+logic [23:0] fb_q;
+logic fb_rw;
 
-//assign fb_adr = h_counter + v_counter * 17'd200;
+assign fb_adr = h_counter + v_counter * 17'd200;
 
-//single_port_ram #(24, 8) framebuffer (fb_d, fb_adr, fb_rw, VGA_CLK, fb_q);
+single_port_ram #(24, 17) framebuffer (fb_d, fb_adr, CLOCK_50, fb_rw, fb_q);
 
 initial begin
 	counter_10 = 0;
 	h_counter = 0;
 	v_counter = 0;
-//	fb_rw = 1'd1;
+	fb_rw = 1'd1;
 	VGA_HS = 1'd1;
 	VGA_VS = 1'd1;
 	VGA_SYNC_N = 1'd1;
@@ -82,8 +84,8 @@ always @ (posedge VGA_CLK) begin
 		v_counter = 0;
 		VGA_BLANK_N = 1; //re-enable RG&B ?
 	end
-	VGA_R = 8'ha0; //fb_d[23:16];
-	VGA_G = 8'h20; //fb_d[15:8];
-	VGA_B = 8'h40; //fb_d[7:0];
+	VGA_R = fb_q[23:16];
+	VGA_G = fb_q[15:8];
+	VGA_B = fb_q[7:0];
 end
 endmodule

@@ -1,5 +1,5 @@
 PGM=$(HOME)/altera/13.1/quartus/bin/quartus_pgm
-modules= vga.sv
+modules= vga.sv single_port_ram.sv
 VFLAGS= -Wall -g2012
 
 all: syn
