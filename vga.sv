@@ -17,22 +17,22 @@ logic [9:0] v_counter;
 logic [23:0] fb_d;
 logic [16:0] fb_adr;
 logic [23:0] fb_q;
-logic fb_rw;
 
 assign fb_adr = h_counter + v_counter * 17'd200;
 
-single_port_ram #(24, 17) framebuffer (fb_d, fb_adr, CLOCK_50, fb_rw, fb_q);
+single_port_ram #(24, 17) framebuffer (fb_d, fb_adr, CLOCK_50, 1'd1, fb_q);
 
+//this stuff should be in a reset block
 initial begin
 	counter_10 = 0;
 	h_counter = 0;
 	v_counter = 0;
-	fb_rw = 1'd1;
 	VGA_HS = 1'd1;
 	VGA_VS = 1'd1;
 	VGA_SYNC_N = 1'd1;
 	VGA_BLANK_N = 1'd1;
-	end
+	VGA_SYNC_N = 0; //no sync on green
+end
 
 always @ (posedge CLOCK_50) begin
 	counter_10++;
@@ -53,12 +53,10 @@ always @ (posedge VGA_CLK) begin
 	if (h_counter == 210) begin
 		//hfront porch end, hsync pluse start
 		VGA_HS = 0; //hsync start
-		VGA_SYNC_N = 0; //not sure about this
 	end
 	if (h_counter == 242) begin
 		//hsync pulse stop, hback porch start
 		VGA_HS = 1; //hsync end
-		VGA_SYNC_N = 1; //not sure about this
 	end
 	if (h_counter == 264) begin
 		//hback porch end
