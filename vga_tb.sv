@@ -14,21 +14,21 @@ module vga_tb;
 	bit VGA_SYNC_N;
 	bit VGA_VS;
 
+	bit rst;
+
 initial begin
 	$dumpfile("framebuffer.vcd");
 	$dumpvars(0, uut);
 	//$dumpoff;
-	#0
 	CLOCK_50 = 0;
 	//#100000 
 	//$dumpon;
-	#5000000
+	#2000000
 	$finish;
 end
 
 always begin
-	#1
-	CLOCK_50 = !CLOCK_50;
+	#1 CLOCK_50 = !CLOCK_50;
 end
 
 vga uut (

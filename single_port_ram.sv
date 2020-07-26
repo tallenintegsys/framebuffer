@@ -11,7 +11,7 @@ module single_port_ram
 	output [(D_WIDTH-1):0] q
 );
 
-	initial $readmemh("screenshot.txt", ram, 0, 119999);
+	initial $readmemh("test_pattern8.txt", ram, 0, 53759);
 
 	// Declare the RAM variable
 	bit [D_WIDTH-1:0] ram[2**A_WIDTH-1:0];

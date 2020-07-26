@@ -11,66 +11,92 @@ module vga (
 	output bit VGA_SYNC_N, // to D2A chip, active low
 	output bit VGA_VS); // DB19 pin, active low
 
-logic [9:0] h_counter;
-logic [9:0] v_counter;
+logic [9:0] h_counter; //visible + blanking
+logic [9:0] v_counter; //visible + blanking
 logic [23:0] fb_d;
-logic [16:0] fb_adr;
+logic [15:0] fb_adr;
 logic [23:0] fb_q;
+logic h_blank, v_blank;
+logic v_advance;
+logic reset;
+logic [3:0]reset_counter;
 
-assign fb_adr = h_counter + v_counter * 17'd200;
+single_port_ram #(24, 16) framebuffer (fb_d, fb_adr, CLOCK_50, 1'd1, fb_q);
 
-single_port_ram #(24, 17) framebuffer (fb_d, fb_adr, CLOCK_50, 1'd1, fb_q);
+//640x480, 60Hz	25.175	640	16	96	48	480	11	2	31
 
-//this stuff should be in a reset block
-initial begin
-	h_counter = 0;
-	v_counter = 0;
-	VGA_HS = 1'd1;
-	VGA_VS = 1'd1;
-	VGA_SYNC_N = 1'd1;
-	VGA_BLANK_N = 1'd1;
-	VGA_SYNC_N = 0; //no sync on green
-end
-/*
-640x480, 60Hz	25.175	640	16	96	48	480	11	2	31
-*/
+assign VGA_BLANK_N = h_blank & v_blank;
+initial reset = 0;
+initial reset_counter = 0;
 
 always @ (posedge CLOCK_50) begin
-	VGA_CLK = ~VGA_CLK; //25MHz
+	reset_counter++;
+	if (reset_counter == 5) begin
+		reset <= 1;
+	end
+	VGA_CLK <= ~VGA_CLK; //25MHz
+	VGA_R <= fb_q[23:16];
+	VGA_G <= fb_q[15:8];
+	VGA_B <= fb_q[7:0];
 end
 
 always @ (posedge VGA_CLK) begin
-	h_counter++;
-	if (h_counter == 640) begin //hfront porch start
-		VGA_BLANK_N = 0; //disable RGB DACs
+if (reset == 0) begin //active low reset
+	h_counter <= 0;
+	v_counter <= 0;
+	VGA_HS = 1'd1;
+	VGA_VS = 1'd1;
+	VGA_SYNC_N <= 0; //no sync on green
+	h_blank <= 1'd1;
+	v_blank <= 1'd1;
+	fb_adr <= 0;
+	v_advance = 0;
+end else begin
+	h_counter <= h_counter + 1;
+	case (h_counter)
+	639: begin //hfront porch start
+		h_blank <= 0; //disable RGB DACs
 	end
-	if (h_counter == 656) begin //hfront porch end
-		VGA_HS = 0; //hsync start
+	655: begin //hfront porch end
+		VGA_HS <= 0; //hsync start
+		v_advance++;
+		if (v_advance && (v_counter < 480)) begin
+			fb_adr <= fb_adr - 320;
+		end
 	end
-	if (h_counter == 752) begin //hback porch start
-		VGA_HS = 1; //hsync end
+	751: begin //hback porch start
+		VGA_HS <= 1'd1; //hsync end
 	end
-	if (h_counter == 800) begin //hback porch end
-		h_counter = 0;
+	800: begin //hback porch end
+		h_blank <= 1'd1; //enable RGB DACs
+		h_counter <= 0;
 		v_counter++;
-		if (v_counter <= 480) //are we in vertical blanking?
-			VGA_BLANK_N = 1; //enable RGB DACs
 	end
-	if (v_counter == 480) begin //vfront porch start
-		VGA_BLANK_N = 0; //disable RGB DACs
+	endcase
+	if ((h_counter >= 0) && (h_counter < 640) && (v_counter < 480)) begin //visible range
+		if (!h_counter[0]) begin
+			fb_adr <= fb_adr + 1;
+		end
 	end
-	if (v_counter == 491) begin //vfront porch end
-		VGA_VS = 0; //vsync start
+	//fb_adr = x_counter * 280 / 640 + y_counter * 192 / 480;
+
+	case (v_counter)
+	480: begin //vfront porch start
+		v_blank <= 0; //disable RGB DACs
+		fb_adr <= 0;
 	end
-	if (v_counter == 493) begin //vsync pulse end
-		VGA_VS = 1; //vsync end
+	491: begin //vfront porch end
+		VGA_VS <= 0; //vsync start
 	end
-	if (v_counter == 524) begin //vback porch end
-		v_counter = 0;
-		VGA_BLANK_N = 1; //enable RGB DACs
+	493: begin //vsync pulse end
+		VGA_VS <= 1'd1; //vsync end
 	end
-	VGA_R = fb_q[23:16];
-	VGA_G = fb_q[15:8];
-	VGA_B = fb_q[7:0];
-end
+	524: begin //vback porch end
+		v_blank <= 1'd1; //enable RGB DACs
+		v_counter <= 0;
+		v_advance = 0;
+	end
+	endcase
+end //if reset
+end //always
 endmodule
