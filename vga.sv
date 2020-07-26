@@ -16,7 +16,7 @@ logic [9:0] v_counter; //visible + blanking
 logic [23:0] fb_d;
 logic [15:0] fb_adr;
 logic [23:0] fb_q;
-logic h_blank, v_blank;
+logic h_blank, v_blank, blank;
 logic v_advance;
 logic reset;
 logic [3:0]reset_counter;
@@ -25,7 +25,7 @@ single_port_ram #(24, 16) framebuffer (fb_d, fb_adr, CLOCK_50, 1'd1, fb_q);
 
 //640x480, 60Hz	25.175	640	16	96	48	480	11	2	31
 
-assign VGA_BLANK_N = h_blank & v_blank;
+assign VGA_BLANK_N = h_blank & v_blank & blank;
 initial reset = 0;
 initial reset_counter = 0;
 
@@ -35,9 +35,6 @@ always @ (posedge CLOCK_50) begin
 		reset <= 1;
 	end
 	VGA_CLK <= ~VGA_CLK; //25MHz
-	VGA_R <= fb_q[23:16];
-	VGA_G <= fb_q[15:8];
-	VGA_B <= fb_q[7:0];
 end
 
 always @ (posedge VGA_CLK) begin
@@ -73,12 +70,13 @@ end else begin
 		v_counter++;
 	end
 	endcase
-	if ((h_counter >= 0) && (h_counter < 280*2) && (v_counter < 192*2)) begin //visible range
+	if ((h_counter >= 0 + 40) && (h_counter < 280*2 + 40) && (v_counter < 192*2)) begin //visible range
+		blank = 1;
 		if (!h_counter[0]) begin
 			fb_adr <= fb_adr + 1;
 		end
-	end
-	//fb_adr = x_counter * 280 / 640 + y_counter * 192 / 480;
+	end else
+		blank = 0;
 
 	case (v_counter)
 	480: begin //vfront porch start
@@ -97,6 +95,9 @@ end else begin
 		v_advance = 0;
 	end
 	endcase
+	VGA_R <= fb_q[23:16];
+	VGA_G <= fb_q[15:8];
+	VGA_B <= fb_q[7:0];
 end //if reset
 end //always
 endmodule
