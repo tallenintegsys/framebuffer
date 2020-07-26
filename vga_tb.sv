@@ -2,19 +2,23 @@
 module vga_tb;
 
 	// Input Ports
-	reg		CLOCK_50;
+	logic CLOCK_50;
 
 	// Output Ports
-	reg [7:0] VGA_B;
-	bit VGA_BLANK_N;
-	bit VGA_CLK;
-	reg [7:0] VGA_G;
-	bit VGA_HS;
-	reg [7:0] VGA_R;
-	bit VGA_SYNC_N;
-	bit VGA_VS;
+	logic [7:0] VGA_B;
+	logic VGA_BLANK_N;
+	logic VGA_CLK;
+	logic [7:0] VGA_G;
+	logic VGA_HS;
+	logic [7:0] VGA_R;
+	logic VGA_SYNC_N;
+	logic VGA_VS;
 
-	bit rst;
+	logic rst;
+	logic fb_wclk;
+	logic [15:0] fb_wadr;
+	logic fb_we;
+	logic [23:0] fb_d;
 
 initial begin
 	$dumpfile("framebuffer.vcd");
@@ -23,7 +27,8 @@ initial begin
 	CLOCK_50 = 0;
 	//#100000 
 	//$dumpon;
-	#2000000
+	//#2000000
+	#20000
 	$finish;
 end
 
@@ -33,6 +38,10 @@ end
 
 vga uut (
 	CLOCK_50,
+	fb_wclk,
+	fb_wadr,
+	fb_we,
+	fb_d,
 	VGA_B,
 	VGA_BLANK_N, // redundant if RG&B are 0?
 	VGA_CLK, // latch the RGBs and put 'em on the DACs

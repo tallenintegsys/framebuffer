@@ -2,6 +2,10 @@
 
 module vga (
 	input CLOCK_50,
+	input fb_wclk,
+	input [15:0] fb_wadr,
+	input fb_we,
+	input [23:0] fb_d,
 	output reg [7:0]VGA_B,
 	output bit VGA_BLANK_N, // to D2A chip, active low
 	output bit VGA_CLK, // latch the RGBs and put 'em on the DACs
@@ -15,16 +19,12 @@ logic [9:0] h_counter; //visible + blanking
 logic [9:0] v_counter; //visible + blanking
 logic [23:0] fb_q;
 logic [15:0] fb_adr;
-logic [23:0] fb_d;
 logic h_blank, v_blank;
 logic v_advance;
 logic reset;
 logic [3:0]reset_counter;
-logic [15:0]fb_adr_w;
-logic fb_we;
-logic fb_w_clk;
 
-simple_dual_port_ram_dual_clock #(24,16) framebuffer (fb_d, fb_adr, fb_adr_w, fb_we, CLOCK_50, fb_w_clk, fb_q);
+simple_dual_port_ram_dual_clock #(24,16) framebuffer (fb_d, fb_adr, fb_wadr, fb_we, CLOCK_50, fb_wclk, fb_q);
 
 //640x480, 60Hz	25.175	640	16	96	48	480	11	2	31
 
