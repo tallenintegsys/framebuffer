@@ -57,7 +57,7 @@ end else begin
 	655: begin //hfront porch end
 		VGA_HS <= 0; //hsync start
 		v_advance++;
-		if (v_advance && (v_counter < 480)) begin
+		if (v_advance && (v_counter > 48) && (v_counter < 480)) begin
 			fb_adr <= fb_adr - 280;
 		end
 	end
@@ -70,13 +70,13 @@ end else begin
 		v_counter++;
 	end
 	endcase
-	if ((h_counter >= 0 + 40) && (h_counter < 280*2 + 40) && (v_counter < 192*2)) begin //visible range
-		blank = 1;
+	if ((h_counter >= 40) && (h_counter < 280*2 + 40) && (v_counter >= 48) && (v_counter < 192*2 + 48)) begin //visible range
+		blank = 1; //unblank (active low)
 		if (!h_counter[0]) begin
 			fb_adr <= fb_adr + 1;
 		end
 	end else
-		blank = 0;
+		blank = 0; //blank (active low)
 
 	case (v_counter)
 	480: begin //vfront porch start
