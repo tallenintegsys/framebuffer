@@ -16,7 +16,7 @@ logic [9:0] v_counter; //visible + blanking
 logic [23:0] fb_q;
 logic [15:0] fb_adr;
 logic [23:0] fb_d;
-logic h_blank, v_blank, blank;
+logic h_blank, v_blank;
 logic v_advance;
 logic reset;
 logic [3:0]reset_counter;
@@ -24,12 +24,11 @@ logic [15:0]fb_adr_w;
 logic fb_we;
 logic fb_w_clk;
 
-//single_port_ram #(24, 16) framebuffer (fb_q, fb_adr, CLOCK_50, 1'd1, fb_q);
 simple_dual_port_ram_dual_clock #(24,16) framebuffer (fb_d, fb_adr, fb_adr_w, fb_we, CLOCK_50, fb_w_clk, fb_q);
 
 //640x480, 60Hz	25.175	640	16	96	48	480	11	2	31
 
-assign VGA_BLANK_N = h_blank & v_blank & blank;
+assign VGA_BLANK_N = h_blank & v_blank;
 initial reset = 0;
 initial reset_counter = 0;
 
@@ -48,20 +47,23 @@ if (reset == 0) begin //active low reset
 	VGA_HS = 1'd1;
 	VGA_VS = 1'd1;
 	VGA_SYNC_N <= 0; //no sync on green
-	h_blank <= 1'd1;
-	v_blank <= 1'd1;
+	h_blank <= 0;
+	v_blank <= 0;
 	fb_adr <= 0;
 	v_advance = 0;
 end else begin
 	h_counter <= h_counter + 1;
 	case (h_counter)
+	000: h_blank <= 0; //blank
+	039: h_blank <= 1; //unblank
+	599: h_blank <= 0; //blank
 	639: begin //hfront porch start
 		h_blank <= 0; //disable RGB DACs
 	end
 	655: begin //hfront porch end
 		VGA_HS <= 0; //hsync start
-		v_advance++;
-		if (v_advance && (v_counter > 48) && (v_counter < 480)) begin
+		v_advance <= ~v_advance;
+		if (!v_counter[0] && (v_counter >= 48) && (v_counter < 480)) begin
 			fb_adr <= fb_adr - 280;
 		end
 	end
@@ -69,20 +71,20 @@ end else begin
 		VGA_HS <= 1'd1; //hsync end
 	end
 	800: begin //hback porch end
-		h_blank <= 1'd1; //enable RGB DACs
 		h_counter <= 0;
 		v_counter++;
 	end
 	endcase
-	if ((h_counter >= 40) && (h_counter < 280*2 + 40) && (v_counter >= 48) && (v_counter < 192*2 + 48)) begin //visible range
-		blank = 1; //unblank (active low)
+	if ((h_blank & v_blank)) begin
 		if (!h_counter[0]) begin
 			fb_adr <= fb_adr + 1;
 		end
-	end else
-		blank = 0; //blank (active low)
+	end
 
 	case (v_counter)
+	000: v_blank <= 0; //blank
+	048: v_blank <= 1; //unblank
+	432: v_blank <= 0; //blank
 	480: begin //vfront porch start
 		v_blank <= 0; //disable RGB DACs
 		fb_adr <= 0;
@@ -96,7 +98,7 @@ end else begin
 	524: begin //vback porch end
 		v_blank <= 1'd1; //enable RGB DACs
 		v_counter <= 0;
-		v_advance = 0;
+		v_advance <= 0;
 	end
 	endcase
 	VGA_R <= fb_q[23:16];
