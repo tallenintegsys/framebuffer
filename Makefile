@@ -16,4 +16,4 @@ pgm :
 	$(PGM) -c 1 --mode=JTAG -o 'p;output_files/framebuffer.sof'
 
 clean:
-	rm *.vcd a.out
+	rm *.vcd *.bak a.out
