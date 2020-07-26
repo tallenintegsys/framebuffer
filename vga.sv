@@ -61,7 +61,7 @@ end else begin
 		VGA_HS <= 0; //hsync start
 		v_advance++;
 		if (v_advance && (v_counter < 480)) begin
-			fb_adr <= fb_adr - 320;
+			fb_adr <= fb_adr - 280;
 		end
 	end
 	751: begin //hback porch start
@@ -73,7 +73,7 @@ end else begin
 		v_counter++;
 	end
 	endcase
-	if ((h_counter >= 0) && (h_counter < 640) && (v_counter < 480)) begin //visible range
+	if ((h_counter >= 0) && (h_counter < 280*2) && (v_counter < 192*2)) begin //visible range
 		if (!h_counter[0]) begin
 			fb_adr <= fb_adr + 1;
 		end
