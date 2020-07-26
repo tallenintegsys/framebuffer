@@ -1,5 +1,5 @@
 PGM=$(HOME)/altera/13.1/quartus/bin/quartus_pgm
-modules= vga.sv single_port_ram.sv
+modules= vga.sv simple_dual_port_ram_dual_clock.sv
 VFLAGS= -Wall -g2012
 
 all: sim

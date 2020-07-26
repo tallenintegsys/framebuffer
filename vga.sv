@@ -13,15 +13,19 @@ module vga (
 
 logic [9:0] h_counter; //visible + blanking
 logic [9:0] v_counter; //visible + blanking
-logic [23:0] fb_d;
-logic [15:0] fb_adr;
 logic [23:0] fb_q;
+logic [15:0] fb_adr;
+logic [23:0] fb_d;
 logic h_blank, v_blank, blank;
 logic v_advance;
 logic reset;
 logic [3:0]reset_counter;
+logic [15:0]fb_adr_w;
+logic fb_we;
+logic fb_w_clk;
 
-single_port_ram #(24, 16) framebuffer (fb_d, fb_adr, CLOCK_50, 1'd1, fb_q);
+//single_port_ram #(24, 16) framebuffer (fb_q, fb_adr, CLOCK_50, 1'd1, fb_q);
+simple_dual_port_ram_dual_clock #(24,16) framebuffer (fb_d, fb_adr, fb_adr_w, fb_we, CLOCK_50, fb_w_clk, fb_q);
 
 //640x480, 60Hz	25.175	640	16	96	48	480	11	2	31
 
