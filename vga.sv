@@ -2,10 +2,8 @@
 
 module vga (
 	input CLOCK_50,
-	input fb_wclk,
-	input [15:0] fb_wadr,
-	input fb_we,
-	input [23:0] fb_d,
+	input [23:0] fb_q,
+	output reg [15:0] fb_radr,
 	output reg [7:0]VGA_B,
 	output bit VGA_BLANK_N, // to D2A chip, active low
 	output bit VGA_CLK, // latch the RGBs and put 'em on the DACs
@@ -17,14 +15,10 @@ module vga (
 
 logic [9:0] h_counter; //visible + blanking
 logic [9:0] v_counter; //visible + blanking
-logic [23:0] fb_q;
-logic [15:0] fb_adr;
 logic h_blank, v_blank;
 logic v_advance;
 logic reset;
 logic [3:0]reset_counter;
-
-simple_dual_port_ram_dual_clock #(24,16) framebuffer (fb_d, fb_adr, fb_wadr, fb_we, CLOCK_50, fb_wclk, fb_q);
 
 //640x480, 60Hz	25.175	640	16	96	48	480	11	2	31
 
@@ -48,7 +42,7 @@ if (reset == 0) begin //active low reset
 	VGA_SYNC_N <= 0; //no sync on green
 	h_blank <= 0;
 	v_blank <= 0;
-	fb_adr <= 0;
+	fb_radr <= 0;
 	v_advance = 0;
 end else begin
 	h_counter <= h_counter + 1;
@@ -61,7 +55,7 @@ end else begin
 		VGA_HS <= 0; //hsync start
 		v_advance <= ~v_advance;
 		if (!v_counter[0] && v_blank)
-			fb_adr <= fb_adr - 280; //redo the line (line double)
+			fb_radr <= fb_radr - 280; //redo the line (line double)
 	end
 	751: VGA_HS <= 1'd1; //hback porch start
 	800: begin //hback porch end
@@ -72,7 +66,7 @@ end else begin
 
 	if ((h_blank & v_blank))
 		if (!h_counter[0])
-			fb_adr <= fb_adr + 1;
+			fb_radr <= fb_radr + 1;
 
 	case (v_counter)
 	000: v_blank <= 0; //blank
@@ -80,7 +74,7 @@ end else begin
 	432: v_blank <= 0; //blank
 	480: begin //vfront porch start
 		v_blank <= 0; //disable RGB DACs
-		fb_adr <= 0;
+		fb_radr <= 0;
 	end
 	491: VGA_VS <= 0; //vfront porch end//vsync start
 	493: VGA_VS <= 1'd1; //vsync pulse end//vsync end

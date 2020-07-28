@@ -39,7 +39,7 @@
 
 set_global_assignment -name FAMILY "Cyclone IV E"
 set_global_assignment -name DEVICE EP4CE115F29C7
-set_global_assignment -name TOP_LEVEL_ENTITY vga
+set_global_assignment -name TOP_LEVEL_ENTITY vdp
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 20.1.0
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "13:45:13  JULY 23, 2020"
 set_global_assignment -name LAST_QUARTUS_VERSION "20.1.0 Lite Edition"
@@ -582,9 +582,6 @@ set_location_assignment PIN_V22 -to HSMC_TX_D_N[16] -disable
 set_location_assignment PIN_T22 -to HSMC_RX_D_N[16] -disable
 set_location_assignment PIN_V24 -to HSMC_CLKOUT_N2 -disable
 set_location_assignment PIN_G24 -to HSMC_CLKOUT_N1 -disable
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AUD_ADCDAT -disable
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AUD_ADCLRCK -disable
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to AUD_BCLK -disable
@@ -1043,35 +1040,6 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to UART_CTS -disable
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to UART_RTS -disable
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to UART_RXD -disable
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to UART_TXD -disable
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[7]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_BLANK_N
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_CLK
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[7]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_HS
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[7]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[6]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[5]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[4]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[3]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[1]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[0]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_SYNC_N
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_VS
 set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKIN_N1 -disable
 set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKIN_N2 -disable
 set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_N[0] -disable
@@ -1112,6 +1080,39 @@ set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKOUT_N2 -disable
 set_instance_assignment -name IO_STANDARD LVDS -to HSMC_CLKOUT_N1 -disable
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
+set_global_assignment -name SYSTEMVERILOG_FILE vdp.sv
 set_global_assignment -name SYSTEMVERILOG_FILE simple_dual_port_ram_dual_clock.sv
 set_global_assignment -name SYSTEMVERILOG_FILE vga.sv
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_B[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_BLANK_N
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_CLK
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_G[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_HS
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[7]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[6]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[5]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[4]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[3]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[1]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[0]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_SYNC_N
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_VS
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

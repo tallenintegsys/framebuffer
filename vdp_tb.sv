@@ -1,5 +1,5 @@
 `timescale 10ns/10ps
-module vga_tb;
+module vdp_tb;
 
 	// Input Ports
 	logic CLOCK_50;
@@ -21,14 +21,14 @@ module vga_tb;
 	logic [23:0] fb_d;
 
 initial begin
-	$dumpfile("framebuffer.vcd");
+	$dumpfile("vdp.vcd");
 	$dumpvars(0, uut);
 	//$dumpoff;
 	CLOCK_50 = 0;
 	//#100000 
 	//$dumpon;
 	//#2000000
-	#20000
+	#2000000
 	$finish;
 end
 
@@ -36,7 +36,7 @@ always begin
 	#1 CLOCK_50 = !CLOCK_50;
 end
 
-vga uut (
+vdp uut (
 	CLOCK_50,
 	fb_wclk,
 	fb_wadr,

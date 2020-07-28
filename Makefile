@@ -1,5 +1,5 @@
 PGM=$(HOME)/altera/13.1/quartus/bin/quartus_pgm
-modules= vga.sv simple_dual_port_ram_dual_clock.sv
+modules= vdp.sv vga.sv simple_dual_port_ram_dual_clock.sv
 VFLAGS= -Wall -g2012
 
 all: sim
@@ -9,7 +9,7 @@ syn :
 	iverilog $(VFLAGS) -o output_files/framebuffer $(modules)
 
 sim :
-	iverilog $(VFLAGS) vga_tb.sv $(modules)
+	iverilog $(VFLAGS) vdp_tb.sv $(modules)
 	./a.out
 
 pgm :
