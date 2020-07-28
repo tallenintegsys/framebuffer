@@ -28,7 +28,7 @@ initial begin
 	//#100000 
 	//$dumpon;
 	//#2000000
-	#2000000
+	#20000
 	$finish;
 end
 

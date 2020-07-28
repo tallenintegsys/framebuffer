@@ -3,7 +3,7 @@
 // Simple Dual Port RAM with separate read/write addresses and
 // separate read/write clocks
 
-module simple_dual_port_ram_dual_clock
+module vram
 #(parameter DATA_WIDTH=8, parameter ADDR_WIDTH=6)
 (
 	input [(DATA_WIDTH-1):0] data,

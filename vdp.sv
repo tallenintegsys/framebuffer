@@ -17,8 +17,10 @@ module vdp (
 	logic [15:0] vram_wadr;
 	logic vram_we;
 	logic [23:0] vram_d;
+	logic [10:0] crom_adr;
+	logic [7:0] crom_q;
 
-simple_dual_port_ram_dual_clock #(24,16) vram (
+vram #(24,16) vram (
 	vram_d,
 	vram_radr,
 	vram_wadr,
@@ -26,6 +28,11 @@ simple_dual_port_ram_dual_clock #(24,16) vram (
 	CLOCK_50,
 	vram_wclk,
 	vram_q);
+
+crom #(8,11) crom (
+	crom_adr,
+	CLOCK_50,
+	crom_q);
 
 vga vga (
 	CLOCK_50,
