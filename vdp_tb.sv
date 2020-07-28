@@ -38,10 +38,6 @@ end
 
 vdp uut (
 	CLOCK_50,
-	fb_wclk,
-	fb_wadr,
-	fb_we,
-	fb_d,
 	VGA_B,
 	VGA_BLANK_N, // redundant if RG&B are 0?
 	VGA_CLK, // latch the RGBs and put 'em on the DACs

@@ -28,7 +28,7 @@ initial reset_counter = 0;
 
 always @ (posedge CLOCK_50) begin
 	reset_counter++;
-	if (reset_counter == 5)
+	if (reset_counter == 4'd5)
 		reset <= 1;
 	VGA_CLK <= ~VGA_CLK; //25MHz
 end
@@ -45,7 +45,7 @@ if (reset == 0) begin //active low reset
 	fb_radr <= 0;
 	v_advance = 0;
 end else begin
-	h_counter <= h_counter + 1;
+	h_counter <= h_counter + 10'd1;
 	case (h_counter)
 	000: h_blank <= 0; //blank
 	039: h_blank <= 1; //unblank
@@ -55,7 +55,7 @@ end else begin
 		VGA_HS <= 0; //hsync start
 		v_advance <= ~v_advance;
 		if (!v_counter[0] && v_blank)
-			fb_radr <= fb_radr - 280; //redo the line (line double)
+			fb_radr <= fb_radr - 16'd280; //redo the line (line double)
 	end
 	751: VGA_HS <= 1'd1; //hback porch start
 	800: begin //hback porch end
@@ -66,7 +66,7 @@ end else begin
 
 	if ((h_blank & v_blank))
 		if (!h_counter[0])
-			fb_radr <= fb_radr + 1;
+			fb_radr <= fb_radr + 1'd1;
 
 	case (v_counter)
 	000: v_blank <= 0; //blank

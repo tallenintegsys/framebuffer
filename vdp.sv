@@ -2,10 +2,6 @@
 
 module vdp (
 	input CLOCK_50,
-	input vram_wclk,
-	input [15:0] vram_wadr,
-	input vram_we,
-	input [23:0] vram_d,
 	output [7:0]VGA_B,
 	output VGA_BLANK_N, // to D2A chip, active low
 	output VGA_CLK, // latch the RGBs and put 'em on the DACs
@@ -17,8 +13,19 @@ module vdp (
 
 	wire [23:0] vram_q;
 	wire [15:0] vram_radr;
+	logic vram_wclk;
+	logic [15:0] vram_wadr;
+	logic vram_we;
+	logic [23:0] vram_d;
 
-simple_dual_port_ram_dual_clock #(24,16) vram (vram_d, vram_radr, vram_wadr, vram_we, CLOCK_50, vram_wclk, vram_q);
+simple_dual_port_ram_dual_clock #(24,16) vram (
+	vram_d,
+	vram_radr,
+	vram_wadr,
+	vram_we,
+	CLOCK_50,
+	vram_wclk,
+	vram_q);
 
 vga vga (
 	CLOCK_50,
