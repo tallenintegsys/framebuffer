@@ -22,20 +22,20 @@ module vdp (
     logic   [7:0]   crom_q;
     logic   [8:0]   x_pos;
     logic   [7:0]   y_pos;
-    logic   [9:0]   txt_adr;
-    logic   [7:0]   charbit;
+    logic   [9:0]   x_txt;
     logic   [7:0]   txtbuf[0:400];  //XXX temporary
     logic   [15:0]  cpu_adr;        //XXX this will live
     logic   [7:0]   txt;            //XXX in main RAM
+    logic   [2:0]   chary;
 
-    assign txt_adr = x_pos[8:3];
-    assign cpu_adr = txt_adr;// it's at $400 on Apple II + 16'h400;
-    assign crom_adr = {txt, y_pos[2:0]}; //XXX the second line of the char
+    assign cpu_adr = x_txt;// it's at $400 on Apple II + 16'h400;
+    assign crom_adr = {txt[6:0], chary}; //XXX the second line of the char
     assign vram_wadr = x_pos + y_pos*280;
     assign txt = txtbuf[cpu_adr];
     initial begin
         x_pos = 0;
         y_pos = 0;
+        chary = 0;
         for (int i = 0; i < 400; i++) begin
           txtbuf[i] = 8'd0;//text[i];
         end
@@ -77,13 +77,19 @@ always @ (posedge CLOCK_50) begin
     x_pos <= x_pos + 1;
     if (x_pos >= 279) begin
         x_pos <= 0;
+        x_txt <= 0;
         y_pos <= y_pos + 1;
+        chary <= chary + 1;
     end
-    if (y_pos >= 192)
+    if (y_pos >= 192) begin
         y_pos <= 0;
+        chary <= 0;
+    end
+    if (x_pos[2:0] == 3'd6)
+        x_txt <= x_txt + 1;
 
     //if (crom_q[3'd6-x_pos[2:0]] == 1)
-    if (crom_q[3'd1<<x_pos[1:0]] == 1)
+    if (crom_q[3'd7-x_pos[2:0]] == 1)
         vram_d <= 24'hffffff;
     else
         vram_d <= 0;
