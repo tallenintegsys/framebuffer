@@ -19,32 +19,42 @@ module vdp_tb;
     logic [15:0] fb_wadr;
     logic fb_we;
     logic [23:0] fb_d;
+    string text = "@ABCDE HELLO WORLD";
+    logic [7:0][40:0] textbuf;
+    logic [15:0] cpu_adr;
+    logic [7:0] txt;
+
+    initial txt = 0;
 
 initial begin
     $dumpfile("vdp.vcd");
     $dumpvars(0, uut);
+    for (int i = 0; i < 40; i++) begin
+      textbuf[i] = 8'd0;//text[i];
+    end
     //$dumpoff;
     CLOCK_50 = 0;
     //#100000
     //$dumpon;
     //#2000000
-    #20000
+    #200000
     $finish;
 end
 
 always begin
     #1 CLOCK_50 = !CLOCK_50;
+    txt = textbuf[cpu_adr];
 end
 
 vdp uut (
-    CLOCK_50,
-    VGA_B,
-    VGA_BLANK_N, // redundant if RG&B are 0?
-    VGA_CLK, // latch the RGBs and put 'em on the DACs
-    VGA_G,
-    VGA_HS,
-    VGA_R,
-    VGA_SYNC_N, //sync on green???
-    VGA_VS);
+    .CLOCK_50,
+    .VGA_B,
+    .VGA_BLANK_N, // redundant if RG&B are 0?
+    .VGA_CLK, // latch the RGBs and put 'em on the DACs
+    .VGA_G,
+    .VGA_HS,
+    .VGA_R,
+    .VGA_SYNC_N, //sync on green???
+    .VGA_VS);
 
 endmodule

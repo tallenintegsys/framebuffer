@@ -25,6 +25,7 @@ logic [3:0]reset_counter;
 assign VGA_BLANK_N = h_blank & v_blank;
 initial reset = 0;
 initial reset_counter = 0;
+initial VGA_CLK = 0;
 
 always @ (posedge CLOCK_50) begin
     reset_counter++;

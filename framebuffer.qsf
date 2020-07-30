@@ -1112,6 +1112,7 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[1]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_R[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_SYNC_N
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to VGA_VS
+set_global_assignment -name SYSTEMVERILOG_FILE demux3to8.sv
 set_global_assignment -name SYSTEMVERILOG_FILE vram.sv
 set_global_assignment -name SYSTEMVERILOG_FILE crom.sv
 set_global_assignment -name SYSTEMVERILOG_FILE vdp.sv
