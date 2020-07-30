@@ -23,6 +23,7 @@ module vdp (
     logic   [8:0]   x_pos;
     logic   [7:0]   y_pos;
     logic   [9:0]   x_txt;
+    logic   [2:0]   x_txt_cnt;
     logic   [7:0]   txtbuf[0:400];  //XXX temporary
     logic   [15:0]  cpu_adr;        //XXX this will live
     logic   [7:0]   txt;            //XXX in main RAM
@@ -36,14 +37,19 @@ module vdp (
         x_pos = 0;
         y_pos = 0;
         chary = 0;
+        x_txt_cnt = 0;
+        x_txt = 0;
         for (int i = 0; i < 400; i++) begin
           txtbuf[i] = 8'd0;//text[i];
         end
-        txtbuf[20] = "H" - 64;
-        txtbuf[21] = "E" - 64;
-        txtbuf[22] = "L" - 64;
-        txtbuf[23] = "L" - 64;
-        txtbuf[24] = "O" - 64;
+        txtbuf[0] = "T" - 64;
+        txtbuf[1] = "I" - 64;
+        txtbuf[2] = "M" - 64;
+        txtbuf[3] = "O" - 64;
+        txtbuf[10] = "E" - 64;
+        txtbuf[20] = "L" - 64;
+        txtbuf[30] = "L" - 64;
+        txtbuf[39] = "O" - 64;
     end
 
 vram #(24,16) vram (
@@ -78,18 +84,24 @@ always @ (posedge CLOCK_50) begin
     if (x_pos >= 279) begin
         x_pos <= 0;
         x_txt <= 0;
+        x_txt_cnt <= 0;
         y_pos <= y_pos + 1;
         chary <= chary + 1;
+    end else begin
+        if (x_txt_cnt == 6) begin
+            x_txt_cnt <= 0;
+            x_txt <= x_txt + 1;
+        end else
+            x_txt_cnt <= x_txt_cnt + 1;
     end
+
     if (y_pos >= 192) begin
         y_pos <= 0;
         chary <= 0;
     end
-    if (x_pos[2:0] == 3'd6)
-        x_txt <= x_txt + 1;
 
-    //if (crom_q[3'd6-x_pos[2:0]] == 1)
-    if (crom_q[3'd7-x_pos[2:0]] == 1)
+
+    if (crom_q[3'd6-x_txt_cnt] == 1)
         vram_d <= 24'hffffff;
     else
         vram_d <= 0;
