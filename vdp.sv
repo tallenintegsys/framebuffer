@@ -24,7 +24,7 @@ module vdp (
     logic   [7:0]   y_pos;
     logic   [9:0]   x_txt;
     logic   [2:0]   x_txt_cnt;
-    logic   [7:0]   txtbuf[0:400];  //XXX temporary
+    logic   [7:0]   txtbuf[0:960];  //XXX temporary
     logic   [15:0]  cpu_adr;        //XXX this will live
     logic   [7:0]   txt;            //XXX in main RAM
     logic   [2:0]   chary;
@@ -39,17 +39,27 @@ module vdp (
         chary = 0;
         x_txt_cnt = 0;
         x_txt = 0;
-        for (int i = 0; i < 400; i++) begin
-          txtbuf[i] = 8'd0;//text[i];
+        for (int i = 0; i < 960; i++) begin
+          txtbuf[i] = 8'ha0;
         end
-        txtbuf[0] = "T" - 64;
-        txtbuf[1] = "I" - 64;
-        txtbuf[2] = "M" - 64;
-        txtbuf[3] = "O" - 64;
-        txtbuf[10] = "E" - 64;
-        txtbuf[20] = "L" - 64;
-        txtbuf[30] = "L" - 64;
-        txtbuf[39] = "O" - 64;
+        txtbuf[0] = "<" - 64;
+        txtbuf[15] = "H" - 64;
+        txtbuf[16] = "E" - 64;
+        txtbuf[17] = "L" - 64;
+        txtbuf[18] = "L" - 64;
+        txtbuf[19] = "O" - 64;
+        txtbuf[20] = " " - 64;
+        txtbuf[21] = "W" - 64;
+        txtbuf[22] = "O" - 64;
+        txtbuf[23] = "R" - 64;
+        txtbuf[24] = "L" - 64;
+        txtbuf[25] = "D" - 64;
+        txtbuf[39] = ">" - 64;
+        txtbuf[920] = "<" - 64;
+        txtbuf[940] = "_" - 64;
+        txtbuf[959] = ">" - 64;
+        for (int i = 0; i < 255; i++)
+            txtbuf[400+i] = i;
     end
 
 vram #(24,16) vram (
@@ -83,7 +93,7 @@ always @ (posedge CLOCK_50) begin
     x_pos <= x_pos + 1;
     if (x_pos >= 279) begin
         x_pos <= 0;
-        x_txt <= 0;
+        x_txt <= 0 + 40 * y_pos[7:3];
         x_txt_cnt <= 0;
         y_pos <= y_pos + 1;
         chary <= chary + 1;
@@ -98,6 +108,7 @@ always @ (posedge CLOCK_50) begin
     if (y_pos >= 192) begin
         y_pos <= 0;
         chary <= 0;
+        x_txt <= 0;
     end
 
 
