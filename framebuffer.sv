@@ -39,6 +39,8 @@ initial begin
         txtbuf[400+i] = i;
 end
 
+assign d = txtbuf[adr];
+
 vdp vdp(
     .CLOCK_50,
     .VGA_B (VGA_B),
