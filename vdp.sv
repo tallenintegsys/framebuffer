@@ -1,5 +1,17 @@
 `timescale 10ns/10ps
 
+/*TOP/         MIDDLE/      BOTTOM/      (SCREEN HOLES)
+BASE  FIRST 40     SECOND 40    THIRD 40     UNUSED 8
+ADDR  #  RANGE     #  RANGE     #  RANGE     RANGE
+$400  00 $400-427  08 $428-44F  16 $450-477  $478-47F
+$480  01 $480-4A7  09 $4A8-4CF  17 $4D0-4F7  $4F8-4FF
+$500  02 $500-527  10 $528-54F  18 $550-577  $578-57F
+$580  03 $580-5A7  11 $5A8-5CF  19 $5D0-5F7  $5F8-5FF
+$600  04 $600-627  12 $628-64F  20 $650-677  $678-67F
+$680  05 $680-6A7  13 $6A8-6CF  21 $6D0-6F7  $6F8-6FF
+$700  06 $700-727  14 $728-74F  22 $750-777  $778-77F
+$780  07 $780-7A7  15 $7A8-7CF  23 $7D0-7F7  $7F8-7FF */
+
 module vdp (
     input           CLOCK_50,
     output  logic   [7:0]VGA_B,
@@ -9,9 +21,9 @@ module vdp (
     output  logic   VGA_HS,         // DB19 pin, active low
     output  logic   [7:0]VGA_R,
     output  logic   VGA_SYNC_N,     // to D2A chip, active low
-    output  logic   VGA_VS/*,         // DB19 pin, active low
+    output  logic   VGA_VS,         // DB19 pin, active low
     output  logic   [15:0]cpu_adr,  // XXX for now we reach out
-    input   logic   [7:0]txt*/);
+    input   logic   [7:0]txt);
 
     wire    [15:0]  vram_radr;
     wire    [23:0]  vram_q;
@@ -24,42 +36,18 @@ module vdp (
     logic   [7:0]   y_pos;
     logic   [9:0]   x_txt;
     logic   [2:0]   x_txt_cnt;
-    logic   [7:0]   txtbuf[0:960];  //XXX temporary
-    logic   [15:0]  cpu_adr;        //XXX this will live
-    logic   [7:0]   txt;            //XXX in main RAM
     logic   [2:0]   chary;
 
     assign cpu_adr = x_txt;// it's at $400 on Apple II + 16'h400;
     assign crom_adr = {txt[6:0], chary}; //XXX the second line of the char
     assign vram_wadr = x_pos + y_pos*280;
-    assign txt = txtbuf[cpu_adr];
+
     initial begin
         x_pos = 0;
         y_pos = 0;
         chary = 0;
         x_txt_cnt = 0;
         x_txt = 0;
-        for (int i = 0; i < 960; i++) begin
-          txtbuf[i] = 8'ha0;
-        end
-        txtbuf[0] = "<" - 64;
-        txtbuf[15] = "H" - 64;
-        txtbuf[16] = "E" - 64;
-        txtbuf[17] = "L" - 64;
-        txtbuf[18] = "L" - 64;
-        txtbuf[19] = "O" - 64;
-        txtbuf[20] = " " - 64;
-        txtbuf[21] = "W" - 64;
-        txtbuf[22] = "O" - 64;
-        txtbuf[23] = "R" - 64;
-        txtbuf[24] = "L" - 64;
-        txtbuf[25] = "D" - 64;
-        txtbuf[39] = ">" - 64;
-        txtbuf[920] = "<" - 64;
-        txtbuf[940] = "_" - 64;
-        txtbuf[959] = ">" - 64;
-        for (int i = 0; i < 255; i++)
-            txtbuf[400+i] = i;
     end
 
 vram #(24,16) vram (

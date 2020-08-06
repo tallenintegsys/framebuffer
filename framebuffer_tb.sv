@@ -46,7 +46,7 @@ always begin
     txt = textbuf[cpu_adr];
 end
 
-vdp uut (
+framebuffer uut (
     .CLOCK_50,
     .VGA_B,
     .VGA_BLANK_N, // redundant if RG&B are 0?
