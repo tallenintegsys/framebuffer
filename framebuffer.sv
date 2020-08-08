@@ -64,7 +64,7 @@ always @ (posedge CLOCK_50) begin
 
         count <= 0;
     end
-    count--;
+    count <= count - 1;
     if (!count)
         phi <= ~phi;
 end
