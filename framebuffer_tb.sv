@@ -23,6 +23,7 @@ module vdp_tb;
     logic [7:0][40:0] textbuf;
     logic [15:0] cpu_adr;
     logic [7:0] txt;
+    logic reset;
 
     initial txt = 0;
 
@@ -34,6 +35,11 @@ initial begin
     end
     //$dumpoff;
     CLOCK_50 = 0;
+    reset <= 0;
+    #10
+    reset <= 1;
+    #1000
+    reset <= 0;
     //#100000
     //$dumpon;
     //#2000000
@@ -48,6 +54,7 @@ end
 
 framebuffer uut (
     .CLOCK_50,
+    .reset,
     .VGA_B,
     .VGA_BLANK_N, // redundant if RG&B are 0?
     .VGA_CLK, // latch the RGBs and put 'em on the DACs
