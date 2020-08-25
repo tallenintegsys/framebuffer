@@ -14,7 +14,7 @@ $780  07 $780-7A7  15 $7A8-7CF  23 $7D0-7F7  $7F8-7FF */
 
 module vdp (
     input           CLOCK_50,
-    input           phi,
+    input           clk,
     input           [7:0]txt,
     input           reset,
     output  logic   [7:0]VGA_B,
@@ -37,8 +37,8 @@ module vdp (
     logic   [8:0]   x_pos;
     logic   [7:0]   y_pos;
     logic   [9:0]   x_txt;
-    logic   [2:0]   x_txt_cnt;
-    logic   [2:0]   chary;
+    logic   [2:0]   cdot_x;
+    logic   [2:0]   cdot_y;
 
     assign adr = {6'd0, x_txt} + 40 * y_pos[7:3] + 16'h400;// it's at $400 on Apple II + 16'h400;
     assign vram_wadr = x_pos + y_pos*280;
@@ -71,37 +71,37 @@ vga vga (
     .VGA_VS         (VGA_VS));            // DB19 pin, active low
 
 
-always @ (posedge phi) begin
+always @ (posedge clk) begin
     if (!reset) begin
         x_pos <= 0;
         y_pos <= 0;
-        chary <= 0;
-        x_txt_cnt <= 0;
+        cdot_y <= 0;
+        cdot_x <= 0;
         x_txt <= 0;
     end else begin
         x_pos <= x_pos + 1;
         if (x_pos >= 279) begin //end of scanline
             x_pos <= 0;
             x_txt <= 0 + 40 * y_pos[7:3]; //8 scanlines per line of text
-            x_txt_cnt <= 0;
+            cdot_x <= 0;
             y_pos <= y_pos + 1;
-            chary <= chary + 1;
+            cdot_y <= cdot_y + 1;
         end else begin
-            if (x_txt_cnt == 6) begin //end of text char cell
-                x_txt_cnt <= 0; //first dot of
+            if (cdot_x == 6) begin //end of text char cell
+                cdot_x <= 0; //first dot of
                 x_txt <= x_txt + 1; //the next cell
             end else
-                x_txt_cnt <= x_txt_cnt + 1; //next dot of this cell
+                cdot_x <= cdot_x + 1; //next dot of this cell
         end
         if (y_pos >= 192) begin //last scan line
             y_pos <= 0;
-            chary <= 0;
+            cdot_y <= 0;
             x_txt <= 0;
         end
 
-        crom_adr <= {txt[7:0], chary[2:0]}; //XXX the second line of the char
+        crom_adr <= {txt[7:0], cdot_y[2:0]}; //XXX the second line of the char
 
-        if (crom_q[3'd6-x_txt_cnt] == 1'd1)
+        if (crom_q[3'd6-cdot_x] == 1'd1)
             vram_d <= 24'hffffff;
         else
             vram_d <= 0;

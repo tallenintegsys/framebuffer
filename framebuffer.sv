@@ -14,7 +14,7 @@ module framebuffer
 logic [7:0]     d;
 logic [15:0]    adr;
 logic [15:0]    a;
-logic [7:0]     txtbuf[0:960];
+logic [7:0]     txtbuf[1024:2040];
 logic [2:0]     count;
 logic           phi;
 
@@ -25,7 +25,7 @@ assign d = txtbuf[a];
 
 vdp vdp(
     .CLOCK_50,
-    .phi (phi),
+    .clk (phi),
     .reset (reset),
     .VGA_B (VGA_B),
     .VGA_BLANK_N,    // to D2A chip, active low
@@ -40,27 +40,43 @@ vdp vdp(
 
 always @ (posedge CLOCK_50) begin
     if (!reset) begin
-        for (int i = 0; i < 960; i++) begin
+        for (int i = 16'h400; i < 16'h7f8; i++) begin
             txtbuf[i] = 8'ha0;
         end
-        txtbuf[0] = "<" - 64;
-        txtbuf[15] = "H" - 64;
-        txtbuf[16] = "E" - 64;
-        txtbuf[17] = "L" - 64;
-        txtbuf[18] = "L" - 64;
-        txtbuf[19] = "O" - 64;
-        txtbuf[20] = " " - 64;
-        txtbuf[21] = "W" - 64;
-        txtbuf[22] = "O" - 64;
-        txtbuf[23] = "R" - 64;
-        txtbuf[24] = "L" - 64;
-        txtbuf[25] = "D" - 64;
-        txtbuf[39] = ">" - 64;
-        txtbuf[920] = "<" - 64;
-        txtbuf[940] = "_" - 64;
-        txtbuf[959] = ">" - 64;
+        txtbuf[16'h400] = "<" - 64;
+        txtbuf[16'h40f] = "H" - 64;
+        txtbuf[16'h410] = "E" - 64;
+        txtbuf[16'h411] = "L" - 64;
+        txtbuf[16'h412] = "L" - 64;
+        txtbuf[16'h413] = "O" - 64;
+        txtbuf[16'h414] = " " - 64;
+        txtbuf[16'h415] = "W" - 64;
+        txtbuf[16'h416] = "O" - 64;
+        txtbuf[16'h417] = "R" - 64;
+        txtbuf[16'h418] = "L" - 64;
+        txtbuf[16'h419] = "D" - 64;
+        txtbuf[16'h427] = ">" - 64;
+        txtbuf[16'h7d0] = "<" - 64;
+        txtbuf[16'h7e4] = "_" - 64;
+        txtbuf[16'h7f7] = ">" - 64;
+
+        txtbuf[16'h480] = "L" - 64;
+        txtbuf[16'h481] = "I" - 64;
+        txtbuf[16'h482] = "N" - 64;
+        txtbuf[16'h483] = "E" - 64;
+        txtbuf[16'h484] = " " - 64;
+        txtbuf[16'h485] = "0" - 64;
+        txtbuf[16'h486] = "2" - 64;
+
+        txtbuf[16'h428] = "L" - 64;
+        txtbuf[16'h429] = "I" - 64;
+        txtbuf[16'h42a] = "N" - 64;
+        txtbuf[16'h42b] = "E" - 64;
+        txtbuf[16'h42c] = " " - 64;
+        txtbuf[16'h42d] = "0" - 64;
+        txtbuf[16'h42e] = "9" - 64;
         for (int i = 0; i < 255; i++)
-            txtbuf[400+i] = i;
+            txtbuf[16'h450+i] = i;
 
         count <= 0;
     end
