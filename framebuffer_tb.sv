@@ -28,7 +28,7 @@ module vdp_tb;
     initial txt = 0;
 
 initial begin
-    $dumpfile("vdp.vcd");
+    $dumpfile("framebuffer.vcd");
     $dumpvars(0, uut);
     for (int i = 0; i < 40; i++) begin
       textbuf[i] = 8'd0;//text[i];
@@ -38,12 +38,10 @@ initial begin
     reset <= 0;
     #10
     reset <= 1;
-    #1000
-    reset <= 0;
     //#100000
     //$dumpon;
     //#2000000
-    #200000
+    #2000000
     $finish;
 end
 

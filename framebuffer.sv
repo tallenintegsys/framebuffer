@@ -1,7 +1,6 @@
 `timescale 10ns/10ps
 module framebuffer
-(
-    input           CLOCK_50,
+(   input           CLOCK_50,
     input           reset,
     output  logic   [7:0]VGA_B,
     output  logic   VGA_BLANK_N,    // to D2A chip, active low
@@ -16,10 +15,11 @@ logic [7:0]     d;
 logic [15:0]    adr;
 logic [15:0]    a;
 logic [7:0]     txtbuf[0:960];
-logic [8:0]     count;
+logic [2:0]     count;
 logic           phi;
 
 initial phi <= 0;
+initial count <= 0;
 assign a = adr - 16'h400;
 assign d = txtbuf[a];
 
@@ -39,7 +39,7 @@ vdp vdp(
     .txt (d));
 
 always @ (posedge CLOCK_50) begin
-    if (reset) begin
+    if (!reset) begin
         for (int i = 0; i < 960; i++) begin
             txtbuf[i] = 8'ha0;
         end
@@ -65,7 +65,7 @@ always @ (posedge CLOCK_50) begin
         count <= 0;
     end
     count <= count - 1;
-    if (!count)
+    if (count == 0)
         phi <= ~phi;
 end
 

@@ -40,7 +40,7 @@ module vdp (
     logic   [2:0]   x_txt_cnt;
     logic   [2:0]   chary;
 
-    assign adr = {6'd0, x_txt} + 16'h400;// it's at $400 on Apple II + 16'h400;
+    assign adr = {6'd0, x_txt} + 40 * y_pos[7:3] + 16'h400;// it's at $400 on Apple II + 16'h400;
     assign vram_wadr = x_pos + y_pos*280;
 
 vram #(24,16) vram (
@@ -80,20 +80,20 @@ always @ (posedge phi) begin
         x_txt <= 0;
     end else begin
         x_pos <= x_pos + 1;
-        if (x_pos >= 279) begin
+        if (x_pos >= 279) begin //end of scanline
             x_pos <= 0;
-            x_txt <= 0 + 40 * y_pos[7:3];
+            x_txt <= 0 + 40 * y_pos[7:3]; //8 scanlines per line of text
             x_txt_cnt <= 0;
             y_pos <= y_pos + 1;
             chary <= chary + 1;
         end else begin
-            if (x_txt_cnt == 6) begin
-                x_txt_cnt <= 0;
-                x_txt <= x_txt + 1;
+            if (x_txt_cnt == 6) begin //end of text char cell
+                x_txt_cnt <= 0; //first dot of
+                x_txt <= x_txt + 1; //the next cell
             end else
-                x_txt_cnt <= x_txt_cnt + 1;
+                x_txt_cnt <= x_txt_cnt + 1; //next dot of this cell
         end
-        if (y_pos >= 192) begin
+        if (y_pos >= 192) begin //last scan line
             y_pos <= 0;
             chary <= 0;
             x_txt <= 0;
@@ -101,11 +101,14 @@ always @ (posedge phi) begin
 
         crom_adr <= {txt[7:0], chary[2:0]}; //XXX the second line of the char
 
-        if (crom_q[3'd6-x_txt_cnt] == 1)
+        if (crom_q[3'd6-x_txt_cnt] == 1'd1)
             vram_d <= 24'hffffff;
         else
             vram_d <= 0;
     end
+end
+
+always @ (posedge CLOCK_50) begin
 end
 
 endmodule
