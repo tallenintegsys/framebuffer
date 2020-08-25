@@ -15,7 +15,6 @@ $780  07 $780-7A7  15 $7A8-7CF  23 $7D0-7F7  $7F8-7FF */
 module vdp (
     input           CLOCK_50,
     input           clk,
-    input           [7:0]txt,
     input           reset,
     output  logic   [7:0]VGA_B,
     output  logic   VGA_BLANK_N,    // to D2A chip, active low
@@ -25,7 +24,8 @@ module vdp (
     output  logic   [7:0]VGA_R,
     output  logic   VGA_SYNC_N,     // to D2A chip, active low
     output  logic   VGA_VS,         // DB19 pin, active low
-    output  logic   [15:0]adr);  // XXX for now we reach out
+    output  logic   [15:0]adr,      // XXX for now we reach out
+    input           [7:0]txt);
 
     wire    [15:0]  vram_radr;
     wire    [23:0]  vram_q;
@@ -70,7 +70,6 @@ vga vga (
     .VGA_SYNC_N     (VGA_SYNC_N),         // to D2A chip, active low
     .VGA_VS         (VGA_VS));            // DB19 pin, active low
 
-
 always @ (posedge clk) begin
     if (!reset) begin
         x_pos <= 0;
@@ -78,6 +77,7 @@ always @ (posedge clk) begin
         cdot_y <= 0;
         cdot_x <= 0;
         x_txt <= 0;
+        crom_adr <= 0;
     end else begin
         x_pos <= x_pos + 1;
         if (x_pos >= 279) begin //end of scanline
@@ -86,11 +86,11 @@ always @ (posedge clk) begin
             cdot_x <= 0;
             y_pos <= y_pos + 1;
             cdot_y <= cdot_y + 1;
-        end else begin
-            if (cdot_x == 6) begin //end of text char cell
+        end else begin //not end of scanline
+            if (cdot_x == 6) begin //end of char cell
                 cdot_x <= 0; //first dot of
                 x_txt <= x_txt + 1; //the next cell
-            end else
+            end else //not end of char cell
                 cdot_x <= cdot_x + 1; //next dot of this cell
         end
         if (y_pos >= 192) begin //last scan line
@@ -99,9 +99,9 @@ always @ (posedge clk) begin
             x_txt <= 0;
         end
 
-        crom_adr <= {txt[7:0], cdot_y[2:0]}; //XXX the second line of the char
+        crom_adr <= {txt[7:0], cdot_y[2:0]}; //{ascii,line}
 
-        if (crom_q[3'd6-cdot_x] == 1'd1)
+        if (crom_q[3'd6-cdot_x] == 1'd1) //bits of line
             vram_d <= 24'hffffff;
         else
             vram_d <= 0;
