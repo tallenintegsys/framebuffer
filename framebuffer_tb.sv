@@ -35,8 +35,9 @@ initial begin
     end
     //$dumpoff;
     CLOCK_50 = 0;
-    reset <= 0;
     #10
+    reset <= 0;
+    #50
     reset <= 1;
     //#100000
     //$dumpon;
@@ -52,7 +53,7 @@ end
 
 framebuffer uut (
     .CLOCK_50,
-    .reset,
+    .KEY ({3'd0,reset}),
     .VGA_B,
     .VGA_BLANK_N, // redundant if RG&B are 0?
     .VGA_CLK, // latch the RGBs and put 'em on the DACs

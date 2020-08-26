@@ -370,15 +370,15 @@ set_location_assignment PIN_L4 -to LCD_EN -disable
 set_location_assignment PIN_L5 -to LCD_ON -disable
 set_location_assignment PIN_M2 -to LCD_RS -disable
 set_location_assignment PIN_M1 -to LCD_RW -disable
-set_location_assignment PIN_F17 -to LEDG[8] -disable
-set_location_assignment PIN_G21 -to LEDG[7] -disable
-set_location_assignment PIN_G22 -to LEDG[6] -disable
-set_location_assignment PIN_G20 -to LEDG[5] -disable
-set_location_assignment PIN_H21 -to LEDG[4] -disable
-set_location_assignment PIN_E24 -to LEDG[3] -disable
-set_location_assignment PIN_E25 -to LEDG[2] -disable
-set_location_assignment PIN_E22 -to LEDG[1] -disable
-set_location_assignment PIN_E21 -to LEDG[0] -disable
+set_location_assignment PIN_F17 -to LEDG[8]
+set_location_assignment PIN_G21 -to LEDG[7]
+set_location_assignment PIN_G22 -to LEDG[6]
+set_location_assignment PIN_G20 -to LEDG[5]
+set_location_assignment PIN_H21 -to LEDG[4]
+set_location_assignment PIN_E24 -to LEDG[3]
+set_location_assignment PIN_E25 -to LEDG[2]
+set_location_assignment PIN_E22 -to LEDG[1]
+set_location_assignment PIN_E21 -to LEDG[0]
 set_location_assignment PIN_H15 -to LEDR[17] -disable
 set_location_assignment PIN_G16 -to LEDR[16] -disable
 set_location_assignment PIN_G15 -to LEDR[15] -disable

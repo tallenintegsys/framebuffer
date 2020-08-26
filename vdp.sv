@@ -24,36 +24,30 @@ module vdp (
     output  logic   [7:0]VGA_R,
     output  logic   VGA_SYNC_N,     // to D2A chip, active low
     output  logic   VGA_VS,         // DB19 pin, active low
-    output  logic   [15:0]adr,      // XXX for now we reach out
-    input           [7:0]txt);
+    output  logic   [15:0]txt_adr,      // XXX for now we reach out
+    input           [7:0]txt_q);
 
-    wire    [15:0]  vram_radr;
-    wire    [23:0]  vram_q;
-    logic           vram_we;
-    logic   [23:0]  vram_d;
-    logic   [15:0]  vram_wadr;
-    logic   [10:0]  crom_adr;
-    logic   [7:0]   crom_q;
-    logic   [8:0]   x_pos;
-    logic   [7:0]   y_pos;
-    logic   [9:0]   x_txt;
-    logic   [2:0]   cdot_x;
-    logic   [2:0]   cdot_y;
-
-    assign adr = {6'd0, x_txt} + 40 * y_pos[7:3] + 16'h400;// it's at $400 on Apple II + 16'h400;
-    assign vram_wadr = x_pos + y_pos*280;
+logic   [23:0] vram_d;
+logic   [15:0] vram_wadr;
+logic   [23:0] vram_q;
+logic   [15:0] vram_radr;
+logic   [7:0] crom_q;
+int x7;
+int x40;
+int y8;
+int y24;
 
 vram #(24,16) vram (
     .d              (vram_d),
-    .r_adr          (vram_radr),
     .w_adr          (vram_wadr),
     .we             (1'd1),
     .r_clk          (CLOCK_50),
     .w_clk          (CLOCK_50),
-    .q              (vram_q));
+    .q              (vram_q),
+    .r_adr          (vram_radr));
 
 crom #(8,11) crom (
-    .adr            (crom_adr),
+    .adr            ({txt_q[7:0], y8[2:0]}),
     .clk            (CLOCK_50),
     .q              (crom_q));
 
@@ -70,45 +64,97 @@ vga vga (
     .VGA_SYNC_N     (VGA_SYNC_N),         // to D2A chip, active low
     .VGA_VS         (VGA_VS));            // DB19 pin, active low
 
-always @ (posedge clk) begin
+always @ (posedge clk, negedge reset) begin
     if (!reset) begin
-        x_pos <= 0;
-        y_pos <= 0;
-        cdot_y <= 0;
-        cdot_x <= 0;
-        x_txt <= 0;
-        crom_adr <= 0;
+        vram_wadr = 0; //last pixel
+        txt_adr = 16'h400;
+        x7 = 0;
+        x40 = 0;
+        y8 = 0;
+        y24 = 0;
     end else begin
-        x_pos <= x_pos + 1;
-        if (x_pos >= 279) begin //end of scanline
-            x_pos <= 0;
-            x_txt <= 0 + 40 * y_pos[7:3]; //8 scanlines per line of text
-            cdot_x <= 0;
-            y_pos <= y_pos + 1;
-            cdot_y <= cdot_y + 1;
-        end else begin //not end of scanline
-            if (cdot_x == 6) begin //end of char cell
-                cdot_x <= 0; //first dot of
-                x_txt <= x_txt + 1; //the next cell
-            end else //not end of char cell
-                cdot_x <= cdot_x + 1; //next dot of this cell
+        x7++;
+        if (x7 == 7) begin
+            x7 = 0;
+            x40++;
+            txt_adr++;
         end
-        if (y_pos >= 192) begin //last scan line
-            y_pos <= 0;
-            cdot_y <= 0;
-            x_txt <= 0;
+        if (x40 == 40) begin
+            x40 = 0;
+            y8++;
+            if (y8 != 8) begin
+            case (txt_adr)
+                16'h428 : txt_adr = 16'h400;
+                16'h4a8 : txt_adr = 16'h480;
+                16'h528 : txt_adr = 16'h500;
+                16'h5a8 : txt_adr = 16'h580;
+                16'h628 : txt_adr = 16'h600;
+                16'h6a8 : txt_adr = 16'h680;
+                16'h728 : txt_adr = 16'h700;
+                16'h7a8 : txt_adr = 16'h780;
+                16'h450 : txt_adr = 16'h428;
+                16'h4d0 : txt_adr = 16'h4a8;
+                16'h550 : txt_adr = 16'h528;
+                16'h5d0 : txt_adr = 16'h5a8;
+                16'h650 : txt_adr = 16'h628;
+                16'h6d0 : txt_adr = 16'h6a8;
+                16'h750 : txt_adr = 16'h728;
+                16'h7d0 : txt_adr = 16'h7a8;
+                16'h478 : txt_adr = 16'h450;
+                16'h4f8 : txt_adr = 16'h4d0;
+                16'h578 : txt_adr = 16'h550;
+                16'h5f8 : txt_adr = 16'h5d0;
+                16'h678 : txt_adr = 16'h650;
+                16'h6f8 : txt_adr = 16'h6d0;
+                16'h778 : txt_adr = 16'h750;
+                16'h7f8 : txt_adr = 16'h7d0;
+            endcase
+            end
+        end
+        if (y8 == 8) begin
+            y8 = 0;
+            y24++;
+            case (txt_adr)
+                16'h428 : txt_adr = 16'h480;
+                16'h4a8 : txt_adr = 16'h500;
+                16'h528 : txt_adr = 16'h580;
+                16'h5a8 : txt_adr = 16'h600;
+                16'h628 : txt_adr = 16'h680;
+                16'h6a8 : txt_adr = 16'h700;
+                16'h728 : txt_adr = 16'h780;
+                16'h7a8 : txt_adr = 16'h428;
+                16'h450 : txt_adr = 16'h4a8;
+                16'h4d0 : txt_adr = 16'h528;
+                16'h550 : txt_adr = 16'h5a8;
+                16'h5d0 : txt_adr = 16'h628;
+                16'h650 : txt_adr = 16'h6a8;
+                16'h6d0 : txt_adr = 16'h728;
+                16'h750 : txt_adr = 16'h7a8;
+                16'h7d0 : txt_adr = 16'h450;
+                16'h478 : txt_adr = 16'h4d0;
+                16'h4f8 : txt_adr = 16'h550;
+                16'h578 : txt_adr = 16'h5d0;
+                16'h5f8 : txt_adr = 16'h650;
+                16'h678 : txt_adr = 16'h6d0;
+                16'h6f8 : txt_adr = 16'h750;
+                16'h778 : txt_adr = 16'h7d0;
+                16'h7f8 : txt_adr = 16'h400;
+            endcase
+        end
+        if (y24 == 24) begin
+            y24 = 0;
         end
 
-        crom_adr <= {txt[7:0], cdot_y[2:0]}; //{ascii,line}
+        vram_wadr++;
+        if (vram_wadr == 280 * 192)
+            vram_wadr = 0;
 
-        if (crom_q[3'd6-cdot_x] == 1'd1) //bits of line
-            vram_d <= 24'hffffff;
+        if (crom_q[3'd7-vram_wadr[2:0]] == 1)
+            vram_d = 24'hffffff;
         else
-            vram_d <= 0;
-    end
-end
+            vram_d = 24'h000000;
 
-always @ (posedge CLOCK_50) begin
-end
+    end
+end //always
 
 endmodule
