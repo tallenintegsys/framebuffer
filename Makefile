@@ -6,7 +6,7 @@ ASM=$(INTEL)quartus_asm
 STA=$(INTEL)quartus_sta
 EDA=$(INTEL)quartus_eda
 PGM=$(ALTERA)quartus_pgm
-modules= framebuffer.sv vdp.sv vga.sv vram.sv crom.sv
+modules= framebuffer.sv vdp.sv vga.sv vram.sv crom.sv txtbuf.sv
 VFLAGS= -Wall -g2012
 
 all: sim

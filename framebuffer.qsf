@@ -353,10 +353,10 @@ set_location_assignment PIN_D27 -to HSMC_TX_D_P[0] -disable
 set_location_assignment PIN_B7 -to I2C_SCLK -disable
 set_location_assignment PIN_A8 -to I2C_SDAT -disable
 set_location_assignment PIN_Y15 -to IRDA_RXD -disable
-set_location_assignment PIN_R24 -to KEY[3] -disable
-set_location_assignment PIN_N21 -to KEY[2] -disable
-set_location_assignment PIN_M21 -to KEY[1] -disable
-set_location_assignment PIN_M23 -to KEY[0] -disable
+set_location_assignment PIN_R24 -to KEY[3]
+set_location_assignment PIN_N21 -to KEY[2]
+set_location_assignment PIN_M21 -to KEY[1]
+set_location_assignment PIN_M23 -to KEY[0]
 set_location_assignment PIN_L6 -to LCD_BLON -disable
 set_location_assignment PIN_M5 -to LCD_DATA[7] -disable
 set_location_assignment PIN_M3 -to LCD_DATA[6] -disable
@@ -379,24 +379,24 @@ set_location_assignment PIN_E24 -to LEDG[3]
 set_location_assignment PIN_E25 -to LEDG[2]
 set_location_assignment PIN_E22 -to LEDG[1]
 set_location_assignment PIN_E21 -to LEDG[0]
-set_location_assignment PIN_H15 -to LEDR[17] -disable
-set_location_assignment PIN_G16 -to LEDR[16] -disable
-set_location_assignment PIN_G15 -to LEDR[15] -disable
-set_location_assignment PIN_F15 -to LEDR[14] -disable
-set_location_assignment PIN_H17 -to LEDR[13] -disable
-set_location_assignment PIN_J16 -to LEDR[12] -disable
-set_location_assignment PIN_H16 -to LEDR[11] -disable
-set_location_assignment PIN_J15 -to LEDR[10] -disable
-set_location_assignment PIN_G17 -to LEDR[9] -disable
-set_location_assignment PIN_J17 -to LEDR[8] -disable
-set_location_assignment PIN_H19 -to LEDR[7] -disable
-set_location_assignment PIN_J19 -to LEDR[6] -disable
-set_location_assignment PIN_E18 -to LEDR[5] -disable
-set_location_assignment PIN_F18 -to LEDR[4] -disable
-set_location_assignment PIN_F21 -to LEDR[3] -disable
-set_location_assignment PIN_E19 -to LEDR[2] -disable
-set_location_assignment PIN_F19 -to LEDR[1] -disable
-set_location_assignment PIN_G19 -to LEDR[0] -disable
+set_location_assignment PIN_H15 -to LEDR[17]
+set_location_assignment PIN_G16 -to LEDR[16]
+set_location_assignment PIN_G15 -to LEDR[15]
+set_location_assignment PIN_F15 -to LEDR[14]
+set_location_assignment PIN_H17 -to LEDR[13]
+set_location_assignment PIN_J16 -to LEDR[12]
+set_location_assignment PIN_H16 -to LEDR[11]
+set_location_assignment PIN_J15 -to LEDR[10]
+set_location_assignment PIN_G17 -to LEDR[9]
+set_location_assignment PIN_J17 -to LEDR[8]
+set_location_assignment PIN_H19 -to LEDR[7]
+set_location_assignment PIN_J19 -to LEDR[6]
+set_location_assignment PIN_E18 -to LEDR[5]
+set_location_assignment PIN_F18 -to LEDR[4]
+set_location_assignment PIN_F21 -to LEDR[3]
+set_location_assignment PIN_E19 -to LEDR[2]
+set_location_assignment PIN_F19 -to LEDR[1]
+set_location_assignment PIN_G19 -to LEDR[0]
 set_location_assignment PIN_C3 -to OTG_ADDR[1] -disable
 set_location_assignment PIN_H7 -to OTG_ADDR[0] -disable
 set_location_assignment PIN_A3 -to OTG_CS_N -disable
@@ -878,10 +878,10 @@ set_instance_assignment -name IO_STANDARD LVDS -to HSMC_TX_D_P[0] -disable
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to I2C_SCLK -disable
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to I2C_SDAT -disable
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to IRDA_RXD -disable
-set_instance_assignment -name IO_STANDARD "2.5 V" -to KEY[3] -disable
-set_instance_assignment -name IO_STANDARD "2.5 V" -to KEY[2] -disable
-set_instance_assignment -name IO_STANDARD "2.5 V" -to KEY[1] -disable
-set_instance_assignment -name IO_STANDARD "2.5 V" -to KEY[0] -disable
+set_instance_assignment -name IO_STANDARD "2.5 V" -to KEY[3]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to KEY[2]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to KEY[1]
+set_instance_assignment -name IO_STANDARD "2.5 V" -to KEY[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_BLON -disable
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_DATA[7] -disable
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to LCD_DATA[6] -disable
@@ -1119,4 +1119,5 @@ set_global_assignment -name SYSTEMVERILOG_FILE vdp.sv
 set_global_assignment -name SYSTEMVERILOG_FILE framebuffer.sv
 set_global_assignment -name SYSTEMVERILOG_FILE vga.sv
 
+set_global_assignment -name SYSTEMVERILOG_FILE txtbuf.sv
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

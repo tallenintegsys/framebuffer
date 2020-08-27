@@ -15,7 +15,7 @@ $780  07 $780-7A7  15 $7A8-7CF  23 $7D0-7F7  $7F8-7FF */
 module vdp (
     input           CLOCK_50,
     input           clk,
-    input           reset,
+    input           res,
     output  logic   [7:0]VGA_B,
     output  logic   VGA_BLANK_N,    // to D2A chip, active low
     output  logic   VGA_CLK,        // latch the RGBs and put 'em on the DACs
@@ -32,10 +32,10 @@ logic   [15:0] vram_wadr;
 logic   [23:0] vram_q;
 logic   [15:0] vram_radr;
 logic   [7:0] crom_q;
-int x7;
-int x40;
-int y8;
-int y24;
+logic   [2:0] x7;
+logic   [5:0] x40;
+logic   [3:0] y8;
+logic   [4:0] y24;
 
 vram #(24,16) vram (
     .d              (vram_d),
@@ -64,8 +64,8 @@ vga vga (
     .VGA_SYNC_N     (VGA_SYNC_N),         // to D2A chip, active low
     .VGA_VS         (VGA_VS));            // DB19 pin, active low
 
-always @ (posedge clk, negedge reset) begin
-    if (!reset) begin
+always @ (posedge clk, negedge res) begin
+    if (!res) begin
         vram_wadr = 0; //last pixel
         txt_adr = 16'h400;
         x7 = 0;
@@ -74,15 +74,15 @@ always @ (posedge clk, negedge reset) begin
         y24 = 0;
     end else begin
         x7++;
-        if (x7 == 7) begin
+        if (x7 == 3'd7) begin
             x7 = 0;
             x40++;
             txt_adr++;
         end
-        if (x40 == 40) begin
+        if (x40 == 6'd40) begin
             x40 = 0;
             y8++;
-            if (y8 != 8) begin
+            if (y8 != 4'd8) begin
             case (txt_adr)
                 16'h428 : txt_adr = 16'h400;
                 16'h4a8 : txt_adr = 16'h480;
@@ -111,7 +111,7 @@ always @ (posedge clk, negedge reset) begin
             endcase
             end
         end
-        if (y8 == 8) begin
+        if (y8 == 4'd8) begin
             y8 = 0;
             y24++;
             case (txt_adr)
@@ -141,20 +141,21 @@ always @ (posedge clk, negedge reset) begin
                 16'h7f8 : txt_adr = 16'h400;
             endcase
         end
-        if (y24 == 24) begin
+        if (y24 == 5'd24) begin
             y24 = 0;
         end
 
         vram_wadr++;
         if (vram_wadr == 280 * 192)
             vram_wadr = 0;
-
-        if (crom_q[3'd7-vram_wadr[2:0]] == 1)
-            vram_d = 24'hffffff;
-        else
-            vram_d = 24'h000000;
-
     end
 end //always
+
+always @ (negedge clk) begin
+    if ((vram_wadr[2:0] != 0) && (crom_q[3'd7-vram_wadr[2:0]] == 1))
+        vram_d = 24'hffffff;
+    else
+        vram_d = 24'h000000;
+end //case
 
 endmodule
