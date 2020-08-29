@@ -152,7 +152,7 @@ always @ (posedge clk, negedge res) begin
 end //always
 
 always @ (negedge clk) begin
-    if ((vram_wadr[2:0] != 0) && (crom_q[3'd7-vram_wadr[2:0]] == 1))
+    if (crom_q[3'd6-x7] == 1)
         vram_d = 24'hffffff;
     else
         vram_d = 24'h000000;
